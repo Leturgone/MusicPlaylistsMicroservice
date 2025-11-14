@@ -1,6 +1,6 @@
 name: CI/CD музыка
 
-on 
+on:
   push:
     branches: [main]
 
@@ -20,6 +20,6 @@ jobs:
           sed -i "s|id=\"unit-tests-date\">.*<|id=\"unit-tests-date\">$(date +'%d/%m/%Y %H:%M')<|" docs/index.html
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add docs/index.html
+          git add static/index.html
           git commit -m "Update CI/CD status page"
           git push
