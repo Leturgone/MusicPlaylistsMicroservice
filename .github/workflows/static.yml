@@ -9,7 +9,6 @@ jobs:
   update-status-page:
     name: Update Status Page
     runs-on: ubuntu-latest
-    needs: test
     steps:
       - uses: actions/checkout@v3
 
@@ -23,3 +22,4 @@ jobs:
           git add static/index.html
           git commit -m "Update CI/CD status page"
           git push
+        
