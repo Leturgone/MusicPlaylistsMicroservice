@@ -19,4 +19,4 @@ FROM amazoncorretto:21 AS runtime
 EXPOSE 8080
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/music_service.jar
-ENTRYPOINT ["java","-jar","/app/emp_server.jar"]
+ENTRYPOINT ["java","-jar","/app/music_service.jar"]
