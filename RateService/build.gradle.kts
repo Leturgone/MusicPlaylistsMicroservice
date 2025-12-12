@@ -38,6 +38,12 @@ kotlin {
     }
 }
 
+
+
+springBoot {
+    mainClass.set("org.example.MainApplicationKt")
+}
+
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
