@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.2.20"
     id("io.ktor.plugin") version "3.1.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
+    application
 }
 
 group = "org.example"
@@ -30,13 +31,14 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
     implementation("com.rabbitmq:amqp-client:5.15.0")
-    // Клиентские зависимости
-
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(21)
+}
+application {
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
