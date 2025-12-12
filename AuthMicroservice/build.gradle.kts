@@ -34,10 +34,14 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(21)
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
+}
+
+springBoot {
+    mainClass.set("org.example.MainApplicationKt")
 }
 
 allOpen {
