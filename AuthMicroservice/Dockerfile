@@ -16,7 +16,7 @@ RUN gradle clean bootJar --no-daemon -D https.protocols=TLSv1.2
 
 # Stage 3: Create the Runtime Image
 FROM amazoncorretto:21 AS runtime
-EXPOSE 8089
+EXPOSE 8086
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/*.jar /app/auth_service.jar
 ENTRYPOINT ["java","-jar","/app/auth_service.jar"]
