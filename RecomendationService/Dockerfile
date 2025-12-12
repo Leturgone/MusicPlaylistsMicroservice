@@ -1,18 +1,18 @@
 # Stage 1: Cache Gradle dependencies
-FROM gradle:8.13 AS cache
+FROM gradle:8.13-jdk21-corretto AS cache
 RUN mkdir -p /home/gradle/cache_home
 ENV GRADLE_USER_HOME=/home/gradle/cache_home
-COPY build.gradle.* gradle.properties /home/gradle/app/
+COPY build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/app/
 COPY gradle /home/gradle/app/gradle
 WORKDIR /home/gradle/app
-RUN gradle clean build -D https.protocols=TLSv1.2 -i --stacktrace
+RUN gradle dependencies --no-daemon
 
 # Stage 2: Build Application
-FROM gradle:8.13  AS build
+FROM gradle:8.13-jdk21-corretto AS build
 COPY --from=cache /home/gradle/cache_home /home/gradle/.gradle
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradlew bootJar -D https.protocols=TLSv1.2 --no-daemon
+RUN gradle clean build --no-daemon -D https.protocols=TLSv1.2
 
 # Stage 3: Create the Runtime Image
 FROM amazoncorretto:21 AS runtime
