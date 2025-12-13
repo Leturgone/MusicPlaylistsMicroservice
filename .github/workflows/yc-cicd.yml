@@ -21,17 +21,17 @@ jobs:
       - name: Login to YC Registry
         uses: docker/login-action@v3
         with:
-          registry: cr.yandex
+          registry: microservice-architecture
           username: json_key
           password: ${{ secrets.YC_KEYS }}
       - name: Push tag to YC Registry
         run: |
-          docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:latest
+          docker push microservice-architecture/${{ secrets.YC_REGISTRY_ID }}/auth-service:latest
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ env.SERVICE_NAME }}
+          images: microservice-architecture/${{ secrets.YC_REGISTRY_ID }}/${{ env.SERVICE_NAME }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
       - name: Build & Push (auth-service → YCR)
