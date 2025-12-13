@@ -1,0 +1,16 @@
+name: Simple Test Workflow
+
+on:
+  push:
+    branches: ["**"]  # На любой ветке
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Always run
+        run: |
+          echo "✅ Workflow is working!"
+          echo "Branch: ${{ github.ref }}"
+          echo "Changed files:"
+          git diff --name-only HEAD~1 HEAD || echo "First commit"
