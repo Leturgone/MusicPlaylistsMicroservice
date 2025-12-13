@@ -15,8 +15,9 @@ repositories {
     mavenCentral()
 }
 
+
 springBoot {
-    mainClass = "org.example.MainApplication"
+    mainClass.set("org.example.MainApplicationKt")
 }
 
 dependencies {

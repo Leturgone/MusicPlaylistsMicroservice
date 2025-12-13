@@ -9,7 +9,7 @@ plugins {
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_20
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 
 repositories {
@@ -36,10 +36,15 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(20)
+    jvmToolchain(21)
     compilerOptions {
         freeCompilerArgs.addAll("-Xjsr305=strict")
     }
+}
+
+
+springBoot {
+    mainClass.set("org.example.MainApplicationKt")
 }
 
 allOpen {

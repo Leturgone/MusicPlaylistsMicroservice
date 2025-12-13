@@ -1,0 +1,336 @@
+version: '3.8'
+
+services:
+  auth-service:
+    container_name: "auth-service"
+    build:
+      context: ./AuthMicroservice
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_users_db:5432/music_users_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      music_users_db:
+        condition: service_healthy
+
+  friends-service:
+    container_name: "friends-service"
+    build:
+      context: ./FriendsService
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_friends_db:5432/music_friends_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      music_friends_db:
+        condition: service_healthy
+
+  music-service:
+    container_name: "music-service"
+    build:
+      context: ./MusicService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_music_db:5432/music_music_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      music_music_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  playlist-service:
+    container_name: "playlist-service"
+    build:
+      context: ./PlaylistService
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_playlist_db:5432/music_playlist_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      music_playlist_db:
+        condition: service_healthy
+
+  profile-service:
+    container_name: "profile-service"
+    build:
+      context: ./ProfileService
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_profile_db:5432/music_profile_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      music_profile_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  rate-service:
+    container_name: "rate-service"
+    build:
+      context: ./RateService
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_rating_db:5432/music_rating_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      music_rating_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  rec-service:
+    container_name: "rec-service"
+    build:
+      context: ./RecomendationService
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8082"
+    environment:
+      - DB_URL=jdbc:postgresql://user_recs_db:5432/user_recs_db
+      - DB_USER=postgres
+      - DB_PASSWORD=root
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+    depends_on:
+      user_recs_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  search-service:
+    container_name: "search-service"
+    build:
+      context: ./SearchService
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://music_search_db:5432/music_search_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      music_search_db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  music_search_db:
+    container_name: "music_search_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_search_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_data_search:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_search_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  user_recs_db:
+    container_name: "user_recs_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: user_recs_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_recs:/var/lib/postgresql/data
+      - ./RecomendationService/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d user_recs_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+
+  music_rating_db:
+    container_name: "music_rating_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_rating_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5431:5432"
+    volumes:
+      - postgres_data_rating:/var/lib/postgresql/data
+      - ./RateService/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_rating_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  music_profile_db:
+    container_name: "music_profile_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_profile_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data_profile:/var/lib/postgresql/data
+      - ./ProfileService/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_profile_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+
+  music_playlist_db:
+    container_name: "music_playlist_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_playlist_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_playlists:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_playlist_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  music_music_db:
+    container_name: "music_music_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_music_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5430:5432"
+    volumes:
+      - postgres_data_music:/var/lib/postgresql/data
+      - ./MusicService/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_music_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  music_friends_db:
+    container_name: "music_friends_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_friends_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data_friends:/var/lib/postgresql/data
+      - ./FriendsService/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_friends_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  music_users_db:
+    container_name: "music_users_db"
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: music_users_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres_data_users:/var/lib/postgresql/data
+      - ./AuthMicroservice/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d music_users_db" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 60s
+volumes:
+  postgres_data_users:
+  postgres_data_friends:
+  postgres_data_music:
+  postgres_data_profile:
+  postgres_data_rating:
+  postgres_data_recs:
+  postgres_data_search:
+  postgres_data_playlists:

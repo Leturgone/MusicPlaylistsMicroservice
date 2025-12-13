@@ -1,6 +1,6 @@
-CREATE DATABASE music_music_db ENCODING = 'UTF8';
+CREATE DATABASE user_recs_db ENCODING = 'UTF8';
 
-\c music_music_db;
+\c user_recs_db;
 
 CREATE TABLE user_recs (
     id SERIAL PRIMARY KEY,
