@@ -1,6 +1,6 @@
-CREATE DATABASE music_friends_db ENCODING = 'UTF8';
+CREATE DATABASE music_profile_db ENCODING = 'UTF8';
 
-\c music_friends_db;
+\c music_profile_db;
 
 CREATE TABLE profile (
     user_id BIGSERIAL PRIMARY KEY,
