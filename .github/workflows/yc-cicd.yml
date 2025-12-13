@@ -61,4 +61,3 @@ jobs:
             NODE_ENV=production
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             DATABASE_URL=${{ secrets.DATABASE_URL }}
-            PORT=3000
