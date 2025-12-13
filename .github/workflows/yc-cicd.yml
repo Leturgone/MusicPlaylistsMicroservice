@@ -24,25 +24,14 @@ jobs:
           registry: cr.yandex
           username: json_key
           password: ${{ secrets.YC_KEYS }}
-      - name: Push tag to YC Registry
-        working-directory: AuthMicroservice
+      - name: Build Docker image
         run: |
-          docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:latest
-      - name: Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: cr.yandex/${{ secrets.YC_REGISTRY_ID }}/${{ env.SERVICE_NAME }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-      - name: Build & Push (auth-service → YCR)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./AuthMicroservice
-          file: Dockerfile
-          push: true
-          platforms: linux/amd64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          docker build \
+          -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:latest \
+          -t cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:${{ github.sha }} \
+          ./AuthMicroservice
+
+          - name: Push Docker image
+            run: |
+              docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:latest
+              docker push cr.yandex/${{ secrets.YC_REGISTRY_ID }}/auth-service:${{ github.sha }}
