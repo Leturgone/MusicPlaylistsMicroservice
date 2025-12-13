@@ -44,10 +44,10 @@ fun Application.module() {
     val logger = LoggerFactory.getLogger(this::class.java)
 
     val databse = Database.connect(
-        url = "jdbc:postgresql://localhost:5432/user_recs_db",
+        url = System.getenv("DB_URL"),
         driver = "org.postgresql.Driver",
-        user = "postgres",
-        password = "root"
+        user = System.getenv("DB_USER") ?: "postgres",
+        password = System.getenv("DB_PASSWORD") ?: "root"
     )
     val repository = DatabaseRepository(databse)
 

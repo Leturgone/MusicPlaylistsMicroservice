@@ -6,10 +6,10 @@ import kotlinx.serialization.json.Json
 
 class RabbitConsumer(private val queueName: String, private val onMessageReceived: (GenreMessage) -> Unit) {
     val connectionFactory = ConnectionFactory().apply {
-        host = "localhost"
-        port = 5672
-        username = "guest"
-        password = "guest"
+        host = System.getenv("RABBITMQ_HOST") ?: "localhost"
+        port = (System.getenv("RABBITMQ_PORT") ?: "5672").toInt()
+        username = System.getenv("RABBITMQ_USERNAME") ?: "guest"
+        password = System.getenv("RABBITMQ_PASSWORD") ?: "guest"
     }
 
     private val connection = connectionFactory.newConnection()
