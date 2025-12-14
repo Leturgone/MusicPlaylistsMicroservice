@@ -12,6 +12,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://music_users_db:5432/music_users_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=root
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=auth-service"
     depends_on:
       music_users_db:
         condition: service_healthy
@@ -27,6 +30,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://music_friends_db:5432/music_friends_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=root
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=friends-service"
     depends_on:
       music_friends_db:
         condition: service_healthy
@@ -46,6 +52,9 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=music-service"
     depends_on:
       music_music_db:
         condition: service_healthy
@@ -63,6 +72,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://music_playlist_db:5432/music_playlist_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=root
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=playlist-service"
     depends_on:
       music_playlist_db:
         condition: service_healthy
@@ -82,6 +94,9 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=profile-service"
     depends_on:
       music_profile_db:
         condition: service_healthy
@@ -103,6 +118,9 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=rate-service"
     depends_on:
       music_rating_db:
         condition: service_healthy
@@ -123,6 +141,9 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=rec-service"
     depends_on:
       user_recs_db:
         condition: service_healthy
@@ -144,6 +165,9 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    labels:
+      - "logging=promtail"
+      - "logging_jobname=search-service"
     depends_on:
       music_search_db:
         condition: service_healthy
@@ -325,6 +349,70 @@ services:
       timeout: 30s
       retries: 3
       start_period: 60s
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - ":3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+    volumes:
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - loki
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - ":9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - ":3100"
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./monitoring/loki-config.yml:/etc/loki/loki-config.yml
+    labels:
+      logging: "promtail"
+      logging_jobname: "loki"
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped
+    depends_on:
+      - loki
+
+
+
 volumes:
   postgres_data_users:
   postgres_data_friends:
@@ -334,3 +422,5 @@ volumes:
   postgres_data_recs:
   postgres_data_search:
   postgres_data_playlists:
+  prometheus_data:
+  grafana_data:
