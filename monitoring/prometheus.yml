@@ -47,27 +47,6 @@ scrape_configs:
     static_configs:
       - targets: [ 'search-service:8087' ]
 
-  - job_name: 'spring-metrics'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 10s
-    static_configs:
-      - targets:
-          - 'auth-service:8086'
-          - 'friends-service:8085'
-          - 'music-service:8080'
-          - 'playlist-service:8083'
-          - 'profile-service:8084'
-          - 'rate-service:8081'
-          - 'rec-service:8082'
-          - 'search-service:8087'
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        regex: '([^:]+)(?::\d+)?'
-      - source_labels: [__address__]
-        target_label: __address__
-        regex: '([^:]+)(?::\d+)'
-        replacement: '${1}'
 
   - job_name: 'rabbitmq'
     static_configs:
