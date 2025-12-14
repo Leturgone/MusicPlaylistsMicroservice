@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'auth-service:8086' ]
+
+  - job_name: 'friends-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'friends-service:8085' ]
+
+  - job_name: 'music-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'music-service:8080' ]
+
+  - job_name: 'playlist-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'playlist-service:8083' ]
+
+  - job_name: 'profile-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'profile-service:8084' ]
+
+  - job_name: 'rate-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'rate-service:8081' ]
+
+  - job_name: 'rec-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'rec-service:8082' ]
+
+  - job_name: 'search-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'search-service:8087' ]
+
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15672']
+    metrics_path: '/api/metrics'
+    basic_auth:
+      username: 'guest'
+      password: 'guest'
