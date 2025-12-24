@@ -1,8 +1,8 @@
 # MusicPlaylists Microservice
-[![rus](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README.md)
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README-en.md)
+[![en](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README.md)
+[![rus](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README-en.md)
 
-# Tech Stack
+## Tech Stack
 
  - **Kotlin**
  - **SpringBoot**
@@ -15,7 +15,7 @@
  - **Promtail**
  - **CI/CD**
 
-# Instalation 
+## Instalation 
 1. Clone repository
 ```bash
 git clone https://github.com/Leturgone/MusicPlaylistsMicroservice.git
