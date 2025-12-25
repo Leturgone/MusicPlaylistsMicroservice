@@ -1,6 +1,6 @@
 # MusicPlaylists Microservice
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README.md)
-[![rus](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README-en.md)
+[![rus](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/Leturgone/MusicPlaylistsMicroservice/blob/main/README-ru.md)
 
 ## Tech Stack
 
