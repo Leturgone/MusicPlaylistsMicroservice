@@ -14,6 +14,7 @@
  - **Loki**
  - **Promtail**
  - **CI/CD**
+ - **Docker**
 
 ## Instalation 
 1. Clone repository
